@@ -27,13 +27,13 @@ def train_model(model, opt):
             torch.save(model.state_dict(), 'weights/model_weights')
                     
         for i, batch in enumerate(opt.train): 
-
-            src = batch.src.transpose(0, 1).to(opt.device)
-            trg = batch.trg.transpose(0, 1).to(opt.device)
-            trg_input = trg[:, :-1]
+            #x 是批次大小？？
+            src = batch.src.transpose(0, 1).to(opt.device)#（x，y1）
+            trg = batch.trg.transpose(0, 1).to(opt.device)# (x,y2+1)
+            trg_input = trg[:, :-1]#（x，y2）
             src_mask, trg_mask = create_masks(src, trg_input, opt)
-            src_mask.to(opt.device)
-            trg_mask.to(opt.device)
+            src_mask.to(opt.device)#(x,1,y1)
+            trg_mask.to(opt.device)#(x,y2,y2)
             preds = model(src, trg_input, src_mask, trg_mask)
             ys = trg[:, 1:].contiguous().view(-1)
             opt.optimizer.zero_grad()
@@ -74,7 +74,7 @@ def main():
     parser.add_argument('-no_cuda', action='store_true')
     parser.add_argument('-SGDR', action='store_true')
     parser.add_argument('-epochs', type=int, default=2)
-    parser.add_argument('-d_model', type=int, default=512)
+    parser.add_argument('-d_model', type=int, default=512)#初始词向量维度
     parser.add_argument('-n_layers', type=int, default=6)
     parser.add_argument('-heads', type=int, default=8)
     parser.add_argument('-dropout', type=int, default=0.1)

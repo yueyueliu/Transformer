@@ -9,7 +9,7 @@ class Embedder(nn.Module):
         self.d_model = d_model
         self.embed = nn.Embedding(vocab_size, d_model)
     def forward(self, x):
-        return self.embed(x)
+        return self.embed(x)#（13724，512）
 
 class PositionalEncoder(nn.Module):
     def __init__(self, d_model, max_seq_len = 200, dropout = 0.1):
@@ -21,11 +21,9 @@ class PositionalEncoder(nn.Module):
         pe = torch.zeros(max_seq_len, d_model)
         for pos in range(max_seq_len):
             for i in range(0, d_model, 2):
-                pe[pos, i] = \
-                math.sin(pos / (10000 ** ((2 * i)/d_model)))
-                pe[pos, i + 1] = \
-                math.cos(pos / (10000 ** ((2 * (i + 1))/d_model)))
-        pe = pe.unsqueeze(0)
+                pe[pos, i] = math.sin(pos / (10000 ** ((2 * i)/d_model)))
+                pe[pos, i + 1] = math.cos(pos / (10000 ** ((2 * (i + 1))/d_model)))
+        pe = pe.unsqueeze(0)# （1，200，512）
         self.register_buffer('pe', pe)
  
     
@@ -37,5 +35,5 @@ class PositionalEncoder(nn.Module):
         pe = Variable(self.pe[:,:seq_len], requires_grad=False)
         if x.is_cuda:
             pe.cuda()
-        x = x + pe
+        x = x + pe#词向量+位置信息
         return self.dropout(x)
