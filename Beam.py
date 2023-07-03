@@ -9,13 +9,12 @@ def init_vars(src, model, SRC, TRG, opt):
     init_tok = TRG.vocab.stoi['<sos>']
     src_mask = (src != SRC.vocab.stoi['<pad>']).unsqueeze(-2)
     e_output = model.encoder(src, src_mask)
-    
+    #outputs就是代替训练时候 target输入decoder
     outputs = torch.LongTensor([[init_tok]], device=opt.device)
 
     trg_mask = nopeak_mask(1, opt)
     
-    out = model.out(model.decoder(outputs,
-    e_output, src_mask, trg_mask))
+    out = model.out(model.decoder(outputs,e_output, src_mask, trg_mask))
     out = F.softmax(out, dim=-1)
     
     probs, ix = out[:, -1].data.topk(opt.k)
@@ -27,7 +26,7 @@ def init_vars(src, model, SRC, TRG, opt):
     
     e_outputs = torch.zeros(opt.k, e_output.size(-2), e_output.size(-1), device=opt.device)
     e_outputs[:, :] = e_output[0]
-    
+    # outputs就是代替训练时候 target输入decoder
     return outputs, e_outputs, log_scores
 
 def k_best_outputs(outputs, out, log_scores, i, k):
@@ -50,14 +49,14 @@ def beam_search(src, model, SRC, TRG, opt):
     
 
     outputs, e_outputs, log_scores = init_vars(src, model, SRC, TRG, opt)
-    eos_tok = TRG.vocab.stoi['<eos>']
-    src_mask = (src != SRC.vocab.stoi['<pad>']).unsqueeze(-2)
+    eos_tok = TRG.vocab.stoi['<eos>']#eos是句子开始
+    src_mask = (src != SRC.vocab.stoi['<pad>']).unsqueeze(-2)#pad是补全
     ind = None
-    for i in range(2, opt.max_len):
+    for i in range(2, opt.max_len):#从第二个到maxlen=80 （第一个是开始符）
     
         trg_mask = nopeak_mask(i, opt)
 
-        out = model.out(model.decoder(outputs[:,:i],
+        out = model.out(model.decoder(outputs[:,:i],###每次decoder输入当前预测的前一个单词
         e_outputs, src_mask, trg_mask))
 
         out = F.softmax(out, dim=-1)

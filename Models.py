@@ -18,7 +18,7 @@ class Encoder(nn.Module):
         self.layers = get_clones(EncoderLayer(d_model, heads, dropout), N)################一个encoder block的实现
         self.norm = Norm(d_model)
 
-    # src（x,y1）,src_mask(x,1,y1),
+    # src（x,y1）,src_mask(x,model_weights,y1),
     def forward(self, src, mask):
         x = self.embed(src)#（x，y1 ，512）初始词embedding
         x = self.pe(x)#（x，y1 ，512） 加入位置信息
@@ -50,11 +50,11 @@ class Transformer(nn.Module):
         self.decoder = Decoder(trg_vocab, d_model, N, heads, dropout)
         self.out = nn.Linear(d_model, trg_vocab)
 
-    # src（x,y1）, trg(x,y2), src_mask(x,1,y1), trg_mask(x,y2,y2)
+    # src（x,y1）, trg(x,y2), src_mask(x,model_weights,y1), trg_mask(x,y2,y2)
     def forward(self, src, trg, src_mask, trg_mask):
         #encoder直接收输入词向量
         e_outputs = self.encoder(src, src_mask)
-        print("DECODER")
+        #print("DECODER")
         #decoder接收 目标词向量；encoder的输出(编码矩阵C)；mask
         d_output = self.decoder(trg, e_outputs, src_mask, trg_mask)
         output = self.out(d_output)

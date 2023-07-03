@@ -29,14 +29,15 @@ def train_model(model, opt):
         for i, batch in enumerate(opt.train): 
             #x 是批次大小？？
             src = batch.src.transpose(0, 1).to(opt.device)#（x，y1）
-            trg = batch.trg.transpose(0, 1).to(opt.device)# (x,y2+1)
+            trg = batch.trg.transpose(0, 1).to(opt.device)# (x,y2+model_weights)
             trg_input = trg[:, :-1]#（x，y2）
             src_mask, trg_mask = create_masks(src, trg_input, opt)
-            src_mask.to(opt.device)#(x,1,y1)
+            src_mask.to(opt.device)#(x,model_weights,y1)
             trg_mask.to(opt.device)#(x,y2,y2)
             preds = model(src, trg_input, src_mask, trg_mask)
             ys = trg[:, 1:].contiguous().view(-1)
             opt.optimizer.zero_grad()
+            #下一个单词的概率
             loss = F.cross_entropy(preds.view(-1, preds.size(-1)), ys, ignore_index=opt.trg_pad)
             loss.backward()
             opt.optimizer.step()
@@ -81,7 +82,7 @@ def main():
     parser.add_argument('-batchsize', type=int, default=1500)
     parser.add_argument('-printevery', type=int, default=100)
     parser.add_argument('-lr', type=int, default=0.0001)
-    parser.add_argument('-load_weights')
+    parser.add_argument('-load_weights')#训练时才用到_pretrain weights
     parser.add_argument('-create_valset', action='store_true')
     parser.add_argument('-max_strlen', type=int, default=80)
     parser.add_argument('-floyd', action='store_true')
@@ -141,7 +142,7 @@ def promptNextAction(model, opt, SRC, TRG):
                         break
                 dst = input('enter folder name to create for weights (no spaces) : ')
                 if ' ' in dst or len(dst) < 1 or len(dst) > 30:
-                    dst = input("name must not contain spaces and be between 1 and 30 characters length, enter again : ")
+                    dst = input("name must not contain spaces and be between model_weights and 30 characters length, enter again : ")
                 else:
                     try:
                         os.mkdir(dst)
@@ -170,7 +171,7 @@ def promptNextAction(model, opt, SRC, TRG):
                     print("input not a number")
                     continue
                 if epochs < 1:
-                    print("epochs must be at least 1")
+                    print("epochs must be at least model_weights")
                     continue
                 else:
                     break

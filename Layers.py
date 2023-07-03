@@ -39,7 +39,7 @@ class DecoderLayer(nn.Module):
         self.attn_2 = MultiHeadAttention(heads, d_model, dropout=dropout)# multihead attention
         self.ff = FeedForward(d_model, dropout=dropout) #feed forward
 
-    #src_mask.(x,1,y1) trg_mask.(x,y2,y2)
+    #src_mask.(x,model_weights,y1) trg_mask.(x,y2,y2)
     def forward(self, x, e_outputs, src_mask, trg_mask):
         x2 = self.norm_1(x)
         x = x + self.dropout_1(self.attn_1(x2, x2, x2, trg_mask))#add & maskatt(norm)

@@ -34,15 +34,15 @@ def multiple_replace(dict, text):
 def translate_sentence(sentence, model, opt, SRC, TRG):
     
     model.eval()
-    indexed = []
+    indexed = []#存储每个单词在sourse vocab中的index
     sentence = SRC.preprocess(sentence)
     for tok in sentence:
         if SRC.vocab.stoi[tok] != 0 or opt.floyd is True:
             indexed.append(SRC.vocab.stoi[tok])
         else:
             indexed.append(get_synonym(tok, SRC))
-    sentence = Variable(torch.LongTensor([indexed]), device=opt.device)
-
+    sentence = Variable(torch.LongTensor([indexed]))
+    # 翻译结束 存储每个单词在target vocab中的index
     sentence = beam_search(sentence, model, SRC, TRG, opt)
 
     return multiple_replace({' ?': '?', ' !': '!', ' .': '.', '\' ': '\'', ' ,': ','}, sentence)
@@ -74,7 +74,8 @@ def main():
     
     opt = parser.parse_args()
 
-    opt.device = 'cuda' if opt.no_cuda is False else 'cpu'
+    opt.device = 'cpu'
+    #opt.device = 'cuda' if opt.no_cuda is False else 'cpu'
  
     assert opt.k > 0
     assert opt.max_len > 10

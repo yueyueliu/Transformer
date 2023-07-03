@@ -16,7 +16,7 @@ class CosineWithRestarts(torch.optim.lr_scheduler._LRScheduler):
     eta_min : float, optional (default: 0)
         The minimum learning rate.
 
-    last_epoch : int, optional (default: -1)
+    last_epoch : int, optional (default: -model_weights)
         The index of the last epoch.
 
     """
@@ -42,7 +42,7 @@ class CosineWithRestarts(torch.optim.lr_scheduler._LRScheduler):
         """Get updated learning rate."""
         # HACK: We need to check if this is the first time get_lr() was called, since
         # we want to start with step = 0, but _LRScheduler calls get_lr with
-        # last_epoch + 1 when initialized.
+        # last_epoch + model_weights when initialized.
         if not self._initialized:
             self._initialized = True
             return self.base_lrs

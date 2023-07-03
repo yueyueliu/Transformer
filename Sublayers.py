@@ -23,10 +23,10 @@ class Norm(nn.Module):
 
 def attention(q, k, v, d_k, mask=None, dropout=None):
     #(93,8,14,14)
-    scores = torch.matmul(q, k.transpose(-2, -1)) /  math.sqrt(d_k)
+    scores = torch.matmul(q, k.transpose(-2, -1)) /  math.sqrt(d_k) #除以key向量长度的平方根 为了反向传播求梯度更稳定
     
     if mask is not None:
-        #(93,1,14)
+        #(93,model_weights,14)
         mask = mask.unsqueeze(1)
         scores = scores.masked_fill(mask == 0, -1e9)
     

@@ -32,7 +32,7 @@ def create_fields(opt):
     
     print("loading spacy tokenizers...")
     
-    t_src = tokenize(opt.src_lang)
+    t_src = tokenize(opt.src_lang)#将句子分解为token
     t_trg = tokenize(opt.trg_lang)
 
     TRG = data.Field(lower=True, tokenize=t_trg.tokenizer, init_token='<sos>', eos_token='<eos>')
@@ -44,7 +44,7 @@ def create_fields(opt):
             SRC = pickle.load(open(f'{opt.load_weights}/SRC.pkl', 'rb'))
             TRG = pickle.load(open(f'{opt.load_weights}/TRG.pkl', 'rb'))
         except:
-            print("error opening SRC.pkl and TXT.pkl field files, please ensure they are in " + opt.load_weights + "/")
+            print("error opening SRC.pkl and TRG.pkl field files, please ensure they are in " + opt.load_weights + "/")
             quit()
         
     return(SRC, TRG)
@@ -55,7 +55,8 @@ def create_dataset(opt, SRC, TRG):
 
     raw_data = {'src' : [line for line in opt.src_data], 'trg': [line for line in opt.trg_data]}
     df = pd.DataFrame(raw_data, columns=["src", "trg"])
-    
+
+    #将sourse或者target句子大于opt.max_strlen=80的mask掉
     mask = (df['src'].str.count(' ') < opt.max_strlen) & (df['trg'].str.count(' ') < opt.max_strlen)
     df = df.loc[mask]
 
@@ -63,7 +64,7 @@ def create_dataset(opt, SRC, TRG):
     
     data_fields = [('src', SRC), ('trg', TRG)]
     train = data.TabularDataset('./translate_transformer_temp.csv', format='csv', fields=data_fields)
-
+    #迭代器
     train_iter = MyIterator(train, batch_size=opt.batchsize, device=opt.device,
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=True, shuffle=True)
@@ -71,8 +72,8 @@ def create_dataset(opt, SRC, TRG):
     os.remove('translate_transformer_temp.csv')
 
     if opt.load_weights is None:
-        SRC.build_vocab(train)
-        TRG.build_vocab(train)
+        SRC.build_vocab(train)#生成sourse 词汇表13724
+        TRG.build_vocab(train)#生成target 词汇表23469
         if opt.checkpoint > 0:
             try:
                 os.mkdir("weights")
@@ -82,7 +83,7 @@ def create_dataset(opt, SRC, TRG):
             pickle.dump(SRC, open('weights/SRC.pkl', 'wb'))
             pickle.dump(TRG, open('weights/TRG.pkl', 'wb'))
 
-    opt.src_pad = SRC.vocab.stoi['<pad>']
+    opt.src_pad = SRC.vocab.stoi['<pad>']#将句子长度不足80的部分补pad
     opt.trg_pad = TRG.vocab.stoi['<pad>']
 
     opt.train_len = get_len(train_iter)
