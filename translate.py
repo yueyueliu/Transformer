@@ -94,6 +94,7 @@ def main():
             except:
                 print("error opening or reading text file")
                 continue
+        # opt.text = "i am fine and you ok thanks!"
         phrase = translate(opt, model, SRC, TRG)
         print('> '+ phrase + '\n')
 

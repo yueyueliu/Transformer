@@ -65,6 +65,8 @@ def create_dataset(opt, SRC, TRG):
     data_fields = [('src', SRC), ('trg', TRG)]
     train = data.TabularDataset('./translate_transformer_temp.csv', format='csv', fields=data_fields)
     #迭代器
+    # batchsize的大小是每个batch中所有词的个数，并不是句子个数
+    # 让每个batch中包含短句子和长句子
     train_iter = MyIterator(train, batch_size=opt.batchsize, device=opt.device,
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=True, shuffle=True)

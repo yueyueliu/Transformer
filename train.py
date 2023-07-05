@@ -27,7 +27,7 @@ def train_model(model, opt):
             torch.save(model.state_dict(), 'weights/model_weights')
                     
         for i, batch in enumerate(opt.train): 
-            #x 是批次大小？？
+           #x 是批次大小？？为什么不同？
             src = batch.src.transpose(0, 1).to(opt.device)#（x，y1）
             trg = batch.trg.transpose(0, 1).to(opt.device)# (x,y2+model_weights)
             trg_input = trg[:, :-1]#（x，y2）
@@ -79,6 +79,8 @@ def main():
     parser.add_argument('-n_layers', type=int, default=6)
     parser.add_argument('-heads', type=int, default=8)
     parser.add_argument('-dropout', type=int, default=0.1)
+    #batchsize的大小是每个batch中所有词的个数，并不是句子个数
+    #让每个batch中包含短句子和长句子
     parser.add_argument('-batchsize', type=int, default=1500)
     parser.add_argument('-printevery', type=int, default=100)
     parser.add_argument('-lr', type=int, default=0.0001)

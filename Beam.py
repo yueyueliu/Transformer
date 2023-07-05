@@ -34,8 +34,13 @@ def k_best_outputs(outputs, out, log_scores, i, k):
     probs, ix = out[:, -1].data.topk(k)
     log_probs = torch.Tensor([math.log(p) for p in probs.data.view(-1)]).view(k, -1) + log_scores.transpose(0,1)
     k_probs, k_ix = log_probs.view(-1).topk(k)
-    
-    row = k_ix // k
+
+    '''集束搜索beam search
+    每次保留概率最高的三个词，然后三个词再预测出9个词；在9个词中保留概率最大的三个词，以及三个词所对应的前半句（其余的就删除了）；
+    beam_size=3在所有时间步，保留3个概率最高词；top_beams=2最终会保留2个翻译结果；
+    相对的：贪婪解码greedy decoding：每次保留概率最大的词语；
+    '''
+    row = k_ix // k#行列号
     col = k_ix % k
 
     outputs[:, :i] = outputs[row, :i]
