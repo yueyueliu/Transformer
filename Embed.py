@@ -3,6 +3,7 @@ import torch.nn as nn
 import math
 from torch.autograd import Variable
 
+#初始化词向量
 class Embedder(nn.Module):
     def __init__(self, vocab_size, d_model):
         super().__init__()
@@ -11,6 +12,7 @@ class Embedder(nn.Module):
     def forward(self, x):
         return self.embed(x)#（13724，512）
 
+#生成位置embedding
 class PositionalEncoder(nn.Module):
     def __init__(self, d_model, max_seq_len = 200, dropout = 0.1):
         super().__init__()

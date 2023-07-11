@@ -31,11 +31,11 @@ def create_fields(opt):
         print('invalid trg language: ' + opt.trg_lang + 'supported languages : ' + str(spacy_langs))
     
     print("loading spacy tokenizers...")
-    
-    t_src = tokenize(opt.src_lang)#将句子分解为token
+    # 将句子分解为token
+    t_src = tokenize(opt.src_lang)
     t_trg = tokenize(opt.trg_lang)
 
-    TRG = data.Field(lower=True, tokenize=t_trg.tokenizer, init_token='<sos>', eos_token='<eos>')
+    TRG = data.Field(lower=True, tokenize=t_trg.tokenizer, init_token='<sos>', eos_token='<eos>')#<sos>开始<eos>结束
     SRC = data.Field(lower=True, tokenize=t_src.tokenizer)
 
     if opt.load_weights is not None:
@@ -84,8 +84,8 @@ def create_dataset(opt, SRC, TRG):
                 quit()
             pickle.dump(SRC, open('weights/SRC.pkl', 'wb'))
             pickle.dump(TRG, open('weights/TRG.pkl', 'wb'))
-
-    opt.src_pad = SRC.vocab.stoi['<pad>']#将句子长度不足80的部分补pad
+    # 将句子长度不足80的部分补pad
+    opt.src_pad = SRC.vocab.stoi['<pad>']
     opt.trg_pad = TRG.vocab.stoi['<pad>']
 
     opt.train_len = get_len(train_iter)

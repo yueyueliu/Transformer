@@ -27,17 +27,18 @@ def train_model(model, opt):
             torch.save(model.state_dict(), 'weights/model_weights')
                     
         for i, batch in enumerate(opt.train): 
-           #x 是批次大小？？为什么不同？
+           #x 是批次大小？？为什么不同？因为batchsize是一个批次中词汇量的大小，不是句子个数
             src = batch.src.transpose(0, 1).to(opt.device)#（x，y1）
             trg = batch.trg.transpose(0, 1).to(opt.device)# (x,y2+model_weights)
             trg_input = trg[:, :-1]#（x，y2）
             src_mask, trg_mask = create_masks(src, trg_input, opt)
             src_mask.to(opt.device)#(x,model_weights,y1)
             trg_mask.to(opt.device)#(x,y2,y2)
+
             preds = model(src, trg_input, src_mask, trg_mask)
             ys = trg[:, 1:].contiguous().view(-1)
             opt.optimizer.zero_grad()
-            #下一个单词的概率
+            #下一个单词的概率；维度[目标词汇表个数，1]
             loss = F.cross_entropy(preds.view(-1, preds.size(-1)), ys, ignore_index=opt.trg_pad)
             loss.backward()
             opt.optimizer.step()
@@ -92,10 +93,12 @@ def main():
 
     opt = parser.parse_args()
 
-    opt.device = 'cuda' if opt.no_cuda is False else 'cpu'
-    if opt.device == 'cuda':
-        assert torch.cuda.is_available()
+    # opt.device = 'cuda' if opt.no_cuda is False else 'cpu'
+    # if opt.device == 'cuda':
+    #     assert torch.cuda.is_available()
+    opt.device = 'cpu'
 
+#读数据
     read_data(opt)
     SRC, TRG = create_fields(opt)
     opt.train = create_dataset(opt, SRC, TRG)

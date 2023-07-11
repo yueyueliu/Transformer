@@ -43,6 +43,8 @@ def translate_sentence(sentence, model, opt, SRC, TRG):
             indexed.append(get_synonym(tok, SRC))
     sentence = Variable(torch.LongTensor([indexed]))
     # 翻译结束 存储每个单词在target vocab中的index
+
+    #集束搜索，每次保留三个概率最大的，然后在9个中再选三个
     sentence = beam_search(sentence, model, SRC, TRG, opt)
 
     return multiple_replace({' ?': '?', ' !': '!', ' .': '.', '\' ': '\'', ' ,': ','}, sentence)
@@ -83,20 +85,23 @@ def main():
     SRC, TRG = create_fields(opt)
     model = get_model(opt, len(SRC.vocab), len(TRG.vocab))
     
-    while True:
-        opt.text =input("Enter a sentence to translate (type 'f' to load from file, or 'q' to quit):\n")
-        if opt.text=="q":
-            break
-        if opt.text=='f':
-            fpath =input("Enter a sentence to translate (type 'f' to load from file, or 'q' to quit):\n")
-            try:
-                opt.text = ' '.join(open(opt.text, encoding='utf-8').read().split('\n'))
-            except:
-                print("error opening or reading text file")
-                continue
-        # opt.text = "i am fine and you ok thanks!"
-        phrase = translate(opt, model, SRC, TRG)
-        print('> '+ phrase + '\n')
+    # while True:
+    #     opt.text =input("Enter a sentence to translate (type 'f' to load from file, or 'q' to quit):\n")
+    #     if opt.text=="q":
+    #         break
+    #     if opt.text=='f':
+    #         fpath =input("Enter a sentence to translate (type 'f' to load from file, or 'q' to quit):\n")
+    #         try:
+    #             opt.text = ' '.join(open(opt.text, encoding='utf-8').read().split('\n'))
+    #         except:
+    #             print("error opening or reading text file")
+    #             continue
+    #     phrase = translate(opt, model, SRC, TRG)
+    #     print('> '+ phrase + '\n')
+
+    opt.text = "i am fine and you ok thanks!"
+    phrase = translate(opt, model, SRC, TRG)
+    print('> ' + phrase + '\n')
 
 if __name__ == '__main__':
     main()

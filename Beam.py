@@ -65,7 +65,7 @@ def beam_search(src, model, SRC, TRG, opt):
         e_outputs, src_mask, trg_mask))
 
         out = F.softmax(out, dim=-1)
-    
+    #集束搜索
         outputs, log_scores = k_best_outputs(outputs, out, log_scores, i, opt.k)
         
         ones = (outputs==eos_tok).nonzero() # Occurrences of end symbols for all input sentences.

@@ -15,7 +15,7 @@ class Encoder(nn.Module):
         self.N = N#6个encoder block
         self.embed = Embedder(vocab_size, d_model)#初始化词向量#（13724，512）
         self.pe = PositionalEncoder(d_model, dropout=dropout)
-        self.layers = get_clones(EncoderLayer(d_model, heads, dropout), N)################一个encoder block的实现
+        self.layers = get_clones(EncoderLayer(d_model, heads, dropout), N)################一个encoder block的实现；N=6
         self.norm = Norm(d_model)
 
     # src（x,y1）,src_mask(x,model_weights,y1),
@@ -23,7 +23,7 @@ class Encoder(nn.Module):
         x = self.embed(src)#（x，y1 ，512）初始词embedding
         x = self.pe(x)#（x，y1 ，512） 加入位置信息
         for i in range(self.N): #block个数=层数
-            x = self.layers[i](x, mask)###6个block
+            x = self.layers[i](x, mask)###分别6个block
         return self.norm(x)  #encoder的输出(编码矩阵C)
     
 class Decoder(nn.Module):
@@ -33,13 +33,13 @@ class Decoder(nn.Module):
         self.N = N
         self.embed = Embedder(vocab_size, d_model)#初始化词向量#（23469，512）
         self.pe = PositionalEncoder(d_model, dropout=dropout)
-        self.layers = get_clones(DecoderLayer(d_model, heads, dropout), N)################一个dncoder block的实现
+        self.layers = get_clones(DecoderLayer(d_model, heads, dropout), N)################一个dncoder block的实现；N=6
         self.norm = Norm(d_model)
     #decoder接收 目标词向量；encoder的输出(编码矩阵C)；mask
     def forward(self, trg, e_outputs, src_mask, trg_mask):
         x = self.embed(trg)#（x，y2 ，512）初始词embedding
         x = self.pe(x)#（x，y2 ，512） 加入位置信息
-        for i in range(self.N):#block个数=层数
+        for i in range(self.N):#分别block个数=层数
             x = self.layers[i](x, e_outputs, src_mask, trg_mask)
         return self.norm(x)
 
