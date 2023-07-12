@@ -1,4 +1,5 @@
 import argparse
+import json
 import time
 import torch
 from Models import get_model
@@ -67,12 +68,14 @@ def train_model(model, opt):
         ((time.time() - start)//60, epoch + 1, "".join('#'*(100//5)), "".join(' '*(20-(100//5))), 100, avg_loss, epoch + 1, avg_loss))
 
 def main():
+    with open("./conf/parameter.json","r") as f:
+        param = json.load(f)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-src_data', required=True)
-    parser.add_argument('-trg_data', required=True)
-    parser.add_argument('-src_lang', required=True)
-    parser.add_argument('-trg_lang', required=True)
+    parser.add_argument('-src_data',default=param['src_data'])
+    parser.add_argument('-trg_data',default=param['trg_data'])
+    parser.add_argument('-src_lang',default=param['src_lang'])
+    parser.add_argument('-trg_lang',default=param['trg_lang'])
     parser.add_argument('-no_cuda', action='store_true')
     parser.add_argument('-SGDR', action='store_true')
     parser.add_argument('-epochs', type=int, default=2)

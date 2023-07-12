@@ -6,12 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8df8767f-a6ea-4143-a2c6-d5af697d8020" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Beam.py" beforeDir="false" afterPath="$PROJECT_DIR$/Beam.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Embed.py" beforeDir="false" afterPath="$PROJECT_DIR$/Embed.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Process.py" beforeDir="false" afterPath="$PROJECT_DIR$/Process.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/translate.py" beforeDir="false" afterPath="$PROJECT_DIR$/translate.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -211,7 +205,8 @@
       <workItem from="1688346652121" duration="16580000" />
       <workItem from="1688539533277" duration="594000" />
       <workItem from="1688551252318" duration="5027000" />
-      <workItem from="1689043007544" duration="1426000" />
+      <workItem from="1689043007544" duration="1772000" />
+      <workItem from="1689170108888" duration="9000" />
     </task>
     <servers />
   </component>
