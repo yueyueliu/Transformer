@@ -1,9 +1,8 @@
 ### Example user template template
 ### Example user template
-
+pretrains
 # IntelliJ project files
 .idea
 *.iml
 out
 gen
-/home/liuyue/PycharmProjects/Transformer/pretrains
